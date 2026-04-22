@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Taller INGENIA — Bloque 1: Herramientas de IA | Somos Zeta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --zeta-primary:       #7030a0;
+    --zeta-primary-light: #9b59d0;
+    --zeta-primary-pale:  #f3eafa;
+    --zeta-dark:          #2d2b2c;
+    --zeta-mid:           #5a5758;
+    --zeta-light:         #f7f4fb;
+    --zeta-border:        #e2d6ef;
+    --white:              #ffffff;
+    --card-radius:        12px;
+    --shadow-sm: 0 2px 8px rgba(112,48,160,0.08);
+    --shadow-md: 0 4px 20px rgba(112,48,160,0.13);
+    --sec-green:      #2e7d32;
+    --sec-green-pale: #e8f5e9;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Barlow',sans-serif; background:#fafafa; color:var(--zeta-dark); font-size:16px; line-height:1.65; }
+
+  .site-header { background:var(--zeta-dark); position:sticky; top:0; z-index:100; box-shadow:0 2px 16px rgba(0,0,0,0.18); }
+  .header-inner { max-width:1100px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; padding:14px 32px; }
+  .logo-group { display:flex; align-items:center; gap:18px; }
+  .logo-text { font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:1.45rem; color:white; line-height:1.1; }
+  .logo-text span { color:var(--zeta-primary-light); font-size:0.72rem; font-weight:600; display:block; letter-spacing:0.18em; text-transform:uppercase; }
+  .logo-sep { width:1px; height:36px; background:rgba(255,255,255,0.2); }
+  .header-client { color:rgba(255,255,255,0.65); font-size:0.82rem; font-weight:500; letter-spacing:0.08em; text-transform:uppercase; }
+  .header-client strong { color:white; font-weight:700; display:block; font-size:0.95rem; letter-spacing:0.02em; text-transform:none; }
+  .header-module { background:var(--zeta-primary); color:white; font-size:0.78rem; font-weight:700; padding:6px 16px; border-radius:20px; letter-spacing:0.06em; text-transform:uppercase; }
+
+  .activity-nav { background:white; border-bottom:2px solid var(--zeta-border); position:sticky; top:72px; z-index:90; }
+  .nav-inner { max-width:1100px; margin:0 auto; display:flex; padding:0 32px; overflow-x:auto; }
+  .nav-tab { display:flex; align-items:center; gap:10px; padding:14px 18px; font-size:0.84rem; font-weight:600; color:var(--zeta-mid); text-decoration:none; border-bottom:3px solid transparent; margin-bottom:-2px; transition:all 0.2s; cursor:pointer; white-space:nowrap; }
+  .nav-tab:hover { color:var(--zeta-primary); background:var(--zeta-primary-pale); border-bottom-color:var(--zeta-primary-light); }
+  .nav-tab.active { color:var(--zeta-primary); border-bottom-color:var(--zeta-primary); background:var(--zeta-primary-pale); }
+  .nav-tab .tab-num { width:24px; height:24px; background:var(--zeta-primary); color:white; border-radius:50%; font-size:0.75rem; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .nav-tab:not(.active) .tab-num { background:var(--zeta-border); color:var(--zeta-mid); }
+
+  .main { max-width:1100px; margin:0 auto; padding:48px 32px 80px; }
+  .activity-section { display:none; animation:fadeIn 0.3s ease; }
+  .activity-section.active { display:block; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);} }
+
+  .activity-header { background:linear-gradient(135deg,var(--zeta-primary) 0%,#4a1575 100%); border-radius:var(--card-radius); padding:40px 44px; color:white; margin-bottom:36px; position:relative; overflow:hidden; }
+  .activity-header::before { content:''; position:absolute; right:-60px; top:-60px; width:280px; height:280px; border-radius:50%; background:rgba(255,255,255,0.04); }
+  .activity-header::after  { content:''; position:absolute; right:60px; bottom:-80px; width:200px; height:200px; border-radius:50%; background:rgba(255,255,255,0.03); }
+  .activity-badge { display:inline-block; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.25); color:rgba(255,255,255,0.9); font-size:0.75rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; padding:4px 12px; border-radius:20px; margin-bottom:14px; }
+  .activity-title { font-family:'Barlow Condensed',sans-serif; font-size:2.2rem; font-weight:800; line-height:1.1; margin-bottom:12px; position:relative; z-index:1; }
+  .activity-desc { font-size:1rem; color:rgba(255,255,255,0.85); max-width:620px; line-height:1.6; position:relative; z-index:1; }
+  .activity-meta { display:flex; gap:24px; margin-top:24px; position:relative; z-index:1; flex-wrap:wrap; }
+  .meta-item { font-size:0.82rem; font-weight:600; color:rgba(255,255,255,0.8); }
+
+  .objectives-card { background:var(--zeta-primary-pale); border:1.5px solid var(--zeta-border); border-left:4px solid var(--zeta-primary); border-radius:var(--card-radius); padding:24px 28px; margin-bottom:36px; }
+  .objectives-card h3 { font-size:0.78rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--zeta-primary); margin-bottom:12px; }
+  .objectives-list { list-style:none; display:flex; flex-direction:column; gap:8px; }
+  .objectives-list li { display:flex; align-items:flex-start; gap:10px; font-size:0.93rem; color:var(--zeta-dark); }
+  .objectives-list li::before { content:'✓'; color:var(--zeta-primary); font-weight:800; flex-shrink:0; }
+
+  .tools-row { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:32px; }
+  .tool-chip { display:flex; align-items:center; gap:7px; background:white; border:1.5px solid var(--zeta-border); border-radius:20px; padding:6px 14px; font-size:0.82rem; font-weight:600; color:var(--zeta-dark); }
+  .tool-dot { width:8px; height:8px; border-radius:50%; background:var(--zeta-primary); flex-shrink:0; }
+
+  .steps-list { display:flex; flex-direction:column; gap:0; }
+  .step { display:flex; gap:20px; position:relative; }
+  .step:not(:last-child)::after { content:''; position:absolute; left:19px; top:48px; bottom:0; width:2px; background:var(--zeta-border); }
+  .step-indicator { flex-shrink:0; }
+  .step-num { width:40px; height:40px; border-radius:50%; background:var(--zeta-primary); color:white; font-weight:800; font-size:1rem; display:flex; align-items:center; justify-content:center; flex-shrink:0; position:relative; z-index:1; box-shadow:0 0 0 4px var(--zeta-primary-pale); }
+  .step-body { flex:1; padding-bottom:32px; }
+  .step-title { font-weight:700; font-size:1.05rem; color:var(--zeta-dark); margin-bottom:8px; }
+  .step-content { font-size:0.95rem; color:var(--zeta-mid); line-height:1.7; }
+  .step-content p { margin-bottom:10px; }
+  .step-content ul, .step-content ol { padding-left:20px; margin-bottom:10px; }
+  .step-content li { margin-bottom:6px; }
+  .step-content strong { color:var(--zeta-dark); font-weight:600; }
+
+  .section-title { font-family:'Barlow Condensed',sans-serif; font-size:1.3rem; font-weight:700; color:var(--zeta-dark); margin-bottom:20px; padding-bottom:10px; border-bottom:2px solid var(--zeta-border); display:flex; align-items:center; gap:10px; }
+  .section-title .title-accent { width:6px; height:22px; background:var(--zeta-primary); border-radius:3px; flex-shrink:0; }
+
+  .prompt-box { background:#1e1a2e; border-radius:10px; margin:14px 0; overflow:hidden; }
+  .prompt-header { display:flex; align-items:center; justify-content:space-between; padding:10px 16px; background:#160f24; border-bottom:1px solid rgba(255,255,255,0.08); }
+  .prompt-label { font-size:0.72rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--zeta-primary-light); }
+  .copy-btn { background:rgba(155,89,208,0.2); border:1px solid rgba(155,89,208,0.4); color:var(--zeta-primary-light); font-size:0.72rem; font-weight:600; padding:3px 10px; border-radius:4px; cursor:pointer; font-family:'Barlow',sans-serif; transition:all 0.2s; }
+  .copy-btn:hover { background:rgba(155,89,208,0.35); color:white; }
+  .prompt-text { padding:16px 18px; font-size:0.88rem; color:#d4c8f0; line-height:1.7; font-family:'Barlow',sans-serif; white-space:pre-wrap; }
+
+  .pr-rol       { color:#f0c070; font-weight:600; }
+  .pr-tema      { color:#70c8f0; font-weight:600; }
+  .pr-preguntas { color:#80d8a0; font-weight:600; }
+  .pr-contexto  { color:#d090f8; font-weight:600; }
+  .pr-formato   { color:#ff9a7a; font-weight:600; }
+  .pr-legend { display:flex; flex-wrap:wrap; gap:10px 20px; padding:10px 18px; border-bottom:1px solid rgba(255,255,255,0.08); background:rgba(0,0,0,0.2); }
+  .pr-legend-item { display:flex; align-items:center; gap:7px; font-size:0.72rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; }
+  .pr-legend-dot { width:10px; height:10px; border-radius:3px; flex-shrink:0; }
+
+  .alert { border-radius:8px; padding:14px 18px; margin:14px 0; font-size:0.9rem; display:flex; align-items:flex-start; gap:12px; line-height:1.6; }
+  .alert-icon { font-size:1.1rem; flex-shrink:0; }
+  .alert.tip      { background:#eef7ff; border:1px solid #b8deff; color:#1a5a8a; }
+  .alert.warning  { background:#fff8e6; border:1px solid #ffd980; color:#7a5500; }
+  .alert.important{ background:#fdf0ff; border:1px solid var(--zeta-border); color:var(--zeta-primary); }
+  .alert.success  { background:var(--sec-green-pale); border:1px solid #a5d6a7; color:var(--sec-green); }
+  .alert strong { font-weight:700; }
+
+  .config-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:16px 0; }
+  .config-card { background:white; border:1.5px solid var(--zeta-border); border-radius:10px; overflow:hidden; box-shadow:var(--shadow-sm); }
+  .config-card-header { background:var(--zeta-primary-pale); border-bottom:1px solid var(--zeta-border); padding:10px 14px; font-size:0.78rem; font-weight:700; color:var(--zeta-primary); letter-spacing:0.06em; text-transform:uppercase; }
+  .config-card-body { padding:12px 14px; font-size:0.84rem; color:var(--zeta-mid); line-height:1.65; }
+  .config-card-body strong { color:var(--zeta-dark); }
+
+  .platform-table { width:100%; border-collapse:collapse; margin:16px 0; font-size:0.87rem; border-radius:10px; overflow:hidden; box-shadow:var(--shadow-sm); }
+  .platform-table th { background:var(--zeta-primary); color:white; padding:11px 14px; text-align:left; font-weight:700; font-size:0.78rem; letter-spacing:0.06em; text-transform:uppercase; }
+  .platform-table td { padding:11px 14px; border-bottom:1px solid var(--zeta-border); vertical-align:top; line-height:1.55; background:white; }
+  .platform-table tr:last-child td { border-bottom:none; }
+  .platform-table tr:nth-child(even) td { background:var(--zeta-light); }
+  .platform-table td:first-child { font-weight:700; color:var(--zeta-dark); white-space:nowrap; }
+
+  .capas-table { width:100%; border-collapse:collapse; margin:16px 0; font-size:0.87rem; border-radius:10px; overflow:hidden; box-shadow:var(--shadow-sm); }
+  .capas-table th { background:var(--zeta-primary); color:white; padding:10px 14px; text-align:left; font-weight:700; font-size:0.78rem; letter-spacing:0.06em; text-transform:uppercase; }
+  .capas-table td { padding:11px 14px; border-bottom:1px solid var(--zeta-border); vertical-align:top; line-height:1.5; background:white; }
+  .capas-table tr:last-child td { border-bottom:none; }
+  .capas-table tr:nth-child(even) td { background:var(--zeta-light); }
+  .capa-tag { display:inline-block; padding:3px 10px; border-radius:5px; font-weight:700; font-size:0.79rem; }
+
+  /* Personality cards grid */
+  .personality-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:20px 0; }
+  .pcard { background:white; border:1.5px solid var(--zeta-border); border-radius:var(--card-radius); overflow:hidden; box-shadow:var(--shadow-sm); }
+  .pcard-header { padding:14px 18px; color:white; font-family:'Barlow Condensed',sans-serif; font-size:1.05rem; font-weight:800; display:flex; align-items:center; gap:10px; }
+  .pcard-header.green  { background:linear-gradient(135deg,#2e7d32,#1b5e20); }
+  .pcard-header.blue   { background:linear-gradient(135deg,#1565c0,#0d47a1); }
+  .pcard-header.orange { background:linear-gradient(135deg,#e65100,#bf360c); }
+  .pcard-body { padding:14px 18px; font-size:0.84rem; color:var(--zeta-mid); line-height:1.6; }
+  .pcard-body strong { color:var(--zeta-dark); display:block; margin-bottom:4px; }
+
+  .checklist { list-style:none; display:flex; flex-direction:column; gap:10px; margin:16px 0; }
+  .checklist li { display:flex; align-items:flex-start; gap:12px; font-size:0.93rem; color:var(--zeta-dark); background:white; border:1.5px solid var(--zeta-border); border-radius:8px; padding:13px 16px; transition:border-color 0.2s, background 0.2s; }
+  .checklist li:has(input:checked) { border-color:#a5d6a7; background:var(--sec-green-pale); color:var(--sec-green); }
+  .checklist li input[type=checkbox] { width:18px; height:18px; accent-color:var(--zeta-primary); flex-shrink:0; margin-top:2px; cursor:pointer; }
+
+  .result-panel { background:white; border:1.5px solid var(--zeta-border); border-radius:var(--card-radius); padding:22px 26px; margin-top:28px; }
+  .result-panel h4 { font-size:0.82rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--zeta-primary); margin-bottom:12px; }
+  .deliverable-list { list-style:none; display:flex; flex-direction:column; gap:8px; }
+  .deliverable-list li { display:flex; align-items:flex-start; gap:10px; font-size:0.92rem; color:var(--zeta-dark); }
+  .del-icon { font-size:1rem; flex-shrink:0; }
+
+  .divider { border:none; border-top:2px solid var(--zeta-border); margin:36px 0; }
+
+  .site-footer { background:var(--zeta-dark); color:rgba(255,255,255,0.7); text-align:center; padding:28px 32px; font-size:0.82rem; line-height:1.7; }
+  .site-footer a { color:var(--zeta-primary-light); text-decoration:none; }
+  .site-footer strong { color:white; }
+
+  @media (max-width:768px) {
+    .header-inner { padding:12px 16px; }
+    .header-module { display:none; }
+    .nav-inner { padding:0 8px; }
+    .main { padding:28px 16px 60px; }
+    .activity-header { padding:28px 24px; }
+    .activity-title { font-size:1.7rem; }
+    .config-grid, .personality-grid { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="logo-group">
+      <div class="logo-text">SOMOS ZETA <span>Digital Advice</span></div>
+      <div class="logo-sep"></div>
+      <div class="header-client">Evento INGENIA · UTN FRSF<strong>Taller de Herramientas de IA</strong></div>
+    </div>
+    <div class="header-module">Bloque 1 — Primeras 2 horas</div>
+  </div>
+</header>
+
+<nav class="activity-nav">
+  <div class="nav-inner">
+    <a class="nav-tab active" onclick="return showActivity(1)" href="#"><span class="tab-num">1</span> Plataformas y recorrido</a>
+    <a class="nav-tab" onclick="return showActivity(2)" href="#"><span class="tab-num">2</span> Tu Asistente de POE</a>
+    <a class="nav-tab" onclick="return showActivity(3)" href="#"><span class="tab-num">3</span> NotebookLM — Mapa del caos</a>
+    <a class="nav-tab" onclick="return showActivity(4)" href="#"><span class="tab-num">4</span> Calibración — Largada</a>
+  </div>
+</nav>
+
+<main class="main">
+
+<!-- ════════════════════════ ACTIVIDAD 1 ════════════════════════ -->
+<section id="activity-1" class="activity-section active">
+
+  <div class="activity-header">
+    <div class="activity-badge">Actividad 1 · Bloque 1 — 20 min</div>
+    <h1 class="activity-title">Las plataformas —<br>qué hace cada una</h1>
+    <p class="activity-desc">Creás cuentas, recorrés las tres interfaces y configurás tu perfil y personalidad. Al terminar, las herramientas están listas y sabés para qué sirve cada una antes de empezar a usarlas en serio.</p>
+    <div class="activity-meta">
+      <div class="meta-item">⏱ 20 minutos</div>
+      <div class="meta-item">👤 Individual</div>
+      <div class="meta-item">💻 Laptop con conexión a internet</div>
+    </div>
+  </div>
+
+  <div class="objectives-card">
+    <h3>¿Qué vas a lograr con esta actividad?</h3>
+    <ul class="objectives-list">
+      <li>Tener cuentas activas en ChatGPT, Gemini y NotebookLM — las tres gratuitas.</li>
+      <li>Entender qué hace cada plataforma y cuándo conviene usar cada una.</li>
+      <li>Configurar tu perfil y personalidad en ChatGPT y Gemini para que la IA ya sepa quién sos y qué rol vas a cumplir en el taller.</li>
+      <li>Reconocer los elementos clave de cada interfaz para no perder tiempo navegando durante las actividades siguientes.</li>
+    </ul>
+  </div>
+
+  <div class="tools-row">
+    <div class="tool-chip"><span class="tool-dot"></span>ChatGPT — chatgpt.com</div>
+    <div class="tool-chip"><span class="tool-dot" style="background:#1a73e8;"></span>Gemini — gemini.google.com</div>
+    <div class="tool-chip"><span class="tool-dot" style="background:#00897b;"></span>NotebookLM — notebooklm.google.com</div>
+  </div>
+
+  <div class="section-title"><span class="title-accent"></span>El mapa antes de entrar — qué hace cada herramienta</div>
+
+  <p style="font-size:0.95rem;color:var(--zeta-mid);margin-bottom:16px;">Las tres son herramientas de IA, pero tienen lógicas distintas. Entender esa diferencia antes de usarlas es lo que te permite elegir bien en cada momento del trabajo.</p>
+
+  <table class="platform-table">
+    <thead><tr><th>Plataforma</th><th>¿Qué hace mejor?</th><th>Uso hoy</th><th>Limitación clave</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>🤖 ChatGPT</td>
+        <td>Redactar, estructurar, razonar sobre textos. Instrucciones complejas con formato de salida definido.</td>
+        <td>Construir y calibrar el Asistente de POE con instrucciones fijas en el Proyecto.</td>
+        <td>Puede inventar datos técnicos. El criterio del ingeniero es el filtro indispensable.</td>
+      </tr>
+      <tr>
+        <td>💎 Gemini</td>
+        <td>Integración con Google (Drive, Docs). Gems conectables a NotebookLM como base de conocimiento viva.</td>
+        <td>Alternativa al Asistente en ChatGPT. Superior si querés conectarlo con docs de Drive.</td>
+        <td>Las mismas alucinaciones que ChatGPT. La ventaja es el ecosistema, no la precisión.</td>
+      </tr>
+      <tr>
+        <td>📓 NotebookLM</td>
+        <td>Analizar documentos que vos cargás. Solo responde con lo que está en tus fuentes. No inventa.</td>
+        <td>Cargar los tres documentos del caso y mapear contradicciones antes de redactar el POE.</td>
+        <td>No tiene conocimiento propio. Si la info no está en tus documentos, no puede aportarla.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="alert important">
+    <span class="alert-icon">💜</span>
+    <div><strong>La combinación es la clave:</strong> NotebookLM mapea el caos → vos resolvés las contradicciones → el Asistente redacta el POE. Hoy las usás en secuencia, no en paralelo.</div>
+  </div>
+
+  <hr class="divider">
+  <div class="section-title"><span class="title-accent"></span>Paso 1 — Crear las cuentas y reconocer las interfaces</div>
+
+  <div class="steps-list">
+    <div class="step">
+      <div class="step-indicator"><div class="step-num">1</div></div>
+      <div class="step-body">
+        <div class="step-title">ChatGPT — chatgpt.com</div>
+        <div class="step-content">
+          <p>Entrá a <strong>chatgpt.com</strong> → <strong>"Sign up"</strong>. Podés registrarte con mail, con tu cuenta de Google o con Microsoft. Plan gratuito, suficiente para hoy.</p>
+          <div class="config-grid">
+            <div class="config-card">
+              <div class="config-card-header">🗂️ Elementos clave de la interfaz</div>
+              <div class="config-card-body">
+                <strong>Panel lateral izquierdo:</strong> historial + sección <em>Proyectos</em> (la usamos en Act. 2).<br><br>
+                <strong>Campo de texto central:</strong> donde escribís los prompts.<br><br>
+                <strong>Ícono de perfil (abajo a la izquierda):</strong> <em>Configuración → Personalización</em>.
+              </div>
+            </div>
+            <div class="config-card">
+              <div class="config-card-header">⚙️ Lo que configurás ahora</div>
+              <div class="config-card-body">
+                <strong>Nombre:</strong> agregá tu nombre para que el asistente lo use.<br><br>
+                <strong>Instrucciones personalizadas:</strong> dos campos que persisten en todos los chats. Los completás en el Paso 2.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-indicator"><div class="step-num">2</div></div>
+      <div class="step-body">
+        <div class="step-title">Google Gemini — gemini.google.com</div>
+        <div class="step-content">
+          <p>Si tenés cuenta de Google, entrás directamente. Abrí <strong>gemini.google.com</strong> e iniciá sesión.</p>
+          <div class="config-grid">
+            <div class="config-card">
+              <div class="config-card-header">🗂️ Elementos clave de la interfaz</div>
+              <div class="config-card-body">
+                <strong>Panel lateral izquierdo:</strong> historial + <em>"Mis Gems"</em> (la usamos en Act. 2 como alternativa).<br><br>
+                <strong>Campo central:</strong> acepta texto, imágenes y archivos de Drive.<br><br>
+                <strong>"Gem Manager":</strong> creación y edición de Gems personalizados.
+              </div>
+            </div>
+            <div class="config-card">
+              <div class="config-card-header">⚙️ Lo que configurás ahora</div>
+              <div class="config-card-body">
+                <strong>Instrucciones de Gemini:</strong> ícono de engranaje → <em>Configuración → Instrucciones de Gemini</em>. Las completás en el Paso 2.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-indicator"><div class="step-num">3</div></div>
+      <div class="step-body">
+        <div class="step-title">NotebookLM — notebooklm.google.com</div>
+        <div class="step-content">
+          <p>Con tu cuenta de Google. Entrá a <strong>notebooklm.google.com</strong>. No requiere configuración inicial — lo usamos en la Actividad 3.</p>
+          <div class="config-grid">
+            <div class="config-card">
+              <div class="config-card-header">🗂️ Panel de Fuentes (izquierda)</div>
+              <div class="config-card-body">
+                Donde cargás los documentos — PDFs, Google Docs, URLs, texto copiado, audio. NotebookLM solo sabe lo que hay acá.<br><br>
+                <strong>Acepta hasta 50 fuentes por cuaderno.</strong>
+              </div>
+            </div>
+            <div class="config-card">
+              <div class="config-card-header">🎙️ Panel Studio (derecha)</div>
+              <div class="config-card-body">
+                <strong>Audio Overview:</strong> podcast de dos voces que debaten el contenido de tus fuentes. Útil para nivelar al equipo rápido.<br><br>
+                <strong>Guía de estudio / Presentación:</strong> síntesis generadas en un clic.
+              </div>
+            </div>
+          </div>
+          <div class="alert tip">
+            <span class="alert-icon">💡</span>
+            <div>Creá un cuaderno vacío de prueba ahora y preguntale algo sin cargar documentos. Vas a ver exactamente cómo se comporta ante la ausencia de fuentes — ese comportamiento es la diferencia más importante respecto a ChatGPT.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+  <div class="section-title"><span class="title-accent"></span>Paso 2 — Configurá tu perfil y personalidad</div>
+
+  <p style="font-size:0.95rem;color:var(--zeta-mid);margin-bottom:12px;">ChatGPT y Gemini pueden guardar instrucciones que persisten en <strong>todos</strong> tus chats. Si la IA sabe quién sos y cuál es tu contexto, no tenés que explicarlo cada vez — cada respuesta ya llega calibrada.</p>
+  <p style="font-size:0.95rem;color:var(--zeta-mid);margin-bottom:20px;">Acá abajo tenés tres opciones de perfil. Elegí la que mejor se ajuste a cómo vas a usar las herramientas hoy y en el futuro. Copialá y pegala en las instrucciones personalizadas de ChatGPT y/o Gemini.</p>
+
+  <div class="personality-grid">
+    <div class="pcard">
+      <div class="pcard-header green">⚙️ Perfil Industrial</div>
+      <div class="pcard-body"><strong>Para estudiantes de Ing. Industrial</strong> que quieren respuestas orientadas a procesos, calidad y operaciones. El lenguaje técnico industrial ya está implícito.</div>
+    </div>
+    <div class="pcard">
+      <div class="pcard-header blue">📊 Perfil Analítico</div>
+      <div class="pcard-body"><strong>Para perfiles que trabajan con datos y resolución de problemas.</strong> Prioriza evidencia, señala trade-offs y exige precisión por encima de la velocidad.</div>
+    </div>
+    <div class="pcard">
+      <div class="pcard-header orange">🏭 Perfil del Caso — Hoy</div>
+      <div class="pcard-body"><strong>Específico para este taller.</strong> El asistente ya sabe que estás trabajando en un caso de la industria alimenticia argentina y que vas a procesarle documentación de planta con contradicciones.</div>
+    </div>
+  </div>
+
+  <div class="prompt-box">
+    <div class="prompt-header">
+      <span class="prompt-label">⚙️ Opción A — Perfil Industrial</span>
+      <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+    </div>
+    <div class="prompt-text">Soy estudiante de Ingeniería Industrial en la UTN. Mi formación está orientada a la mejora de procesos, gestión de operaciones, calidad y sistemas productivos.
+
+Cuando me respondas:
+— Usá lenguaje técnico pero claro. Prefiero respuestas estructuradas cuando el tema lo requiere.
+— Si hay términos de gestión o calidad industrial relevantes (Lean, HACCP, ISO, POE, KPI), úsalos sin explicarlos salvo que te los pida.
+— Si me das instrucciones paso a paso, que sean ejecutables, no teóricas.
+— Si algo tiene implicancias de seguridad operativa o regulatoria, mencionalo aunque no te lo haya pedido.
+— Cuando no tenés información suficiente para responder con precisión, decímelo en lugar de suponer.</div>
+  </div>
+
+  <div class="prompt-box">
+    <div class="prompt-header">
+      <span class="prompt-label">📊 Opción B — Perfil Analítico</span>
+      <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+    </div>
+    <div class="prompt-text">Soy estudiante universitario de ingeniería. Trabajo con resolución de problemas complejos y toma de decisiones basada en datos.
+
+Cuando me respondas:
+— Priorizo precisión y evidencia por sobre generalidades. Si algo no tiene respaldo, indicalo.
+— Cuando el problema tiene múltiples enfoques posibles, presentalos y señalá los trade-offs.
+— Si te doy información con contradicciones o lagunas, identificalas antes de responder.
+— Prefiero respuestas directas al punto. Evitá información que no pedí salvo que sea crítica.
+— Si trabajo sobre un caso específico, adaptá tus respuestas a ese contexto, no a uno genérico.</div>
+  </div>
+
+  <div class="prompt-box">
+    <div class="prompt-header">
+      <span class="prompt-label">🏭 Opción C — Perfil del Caso (específico para el taller de hoy)</span>
+      <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+    </div>
+    <div class="prompt-text">Soy estudiante de Ingeniería Industrial participando en el taller INGENIA de la UTN Santa Fe. Hoy estoy resolviendo un caso industrial: análisis operativo de una planta de envasado de aceite de girasol para redactar un Procedimiento Operativo Estandarizado (POE) de setup de cambio de formato, usando entrevistas a operarios y registros de no conformidades.
+
+Cuando me respondas:
+— Contexto operativo: industria alimenticia argentina, planta de envasado, tres turnos, cuatro operarios por turno.
+— Si encontrás información contradictoria en lo que te paso, señalala explícitamente antes de responder.
+— Lenguaje operativo directo, ejecutable por un operario. Sin lenguaje académico.
+— Si un paso depende de una persona específica, incluí qué hacer cuando esa persona no está.
+— Si inventarías un valor técnico porque no está en la información que te di, preguntame antes.</div>
+  </div>
+
+  <div class="alert tip">
+    <span class="alert-icon">💡</span>
+    <div><strong>¿Dónde pegarlo?</strong> ChatGPT: <em>ícono de perfil → Configuración → Personalización → Instrucciones personalizadas</em>. Gemini: <em>foto de perfil → Inteligencia personalizada → Instrucciones para Gemini</em>. Son campos de texto libre.</div>
+  </div>
+
+  <div class="alert important">
+    <span class="alert-icon">🤖</span>
+    <div><strong>¿No sabés qué escribir o querés mejorar tu perfil?</strong> Usá el <a href="https://gemini.google.com/gem/1B9BINFanHXnDNR3BzsTzcDOhEfbmg8zB?usp=sharing" target="_blank" style="color:var(--zeta-primary);font-weight:700;">SZ-Asistente de Prompts 2.0 →</a> — un asistente creado por Somos Zeta para ayudarte a construir o mejorar instrucciones desde cero, aplicando buenas prácticas de prompt engineering. Describile en lenguaje natural cómo trabajás y qué querés que la IA recuerde, y él te devuelve el bloque listo para pegar.</div>
+  </div>
+
+  <div class="alert warning">
+    <span class="alert-icon">⚠️</span>
+    <div>Las instrucciones personalizadas afectan a <strong>todos</strong> tus chats comunes. Si ya tenés algo configurado para otro uso, podés saltearte este paso y usar directamente las instrucciones del Proyecto/Gem en la Actividad 2, donde el contexto va adentro del asistente.</div>
+  </div>
+
+  <hr class="divider">
+  <div class="section-title"><span class="title-accent"></span>Paso 3 — Conectá Gemini con tus apps de Google</div>
+
+  <p style="font-size:0.95rem;color:var(--zeta-mid);margin-bottom:16px;">Una de las ventajas reales de Gemini frente a ChatGPT es que podés habilitarle acceso directo a tus aplicaciones de Google. Una vez activadas, Gemini puede leer tu Gmail, buscar archivos en Drive, consultar tu Calendar o responder preguntas sobre videos de YouTube — todo sin salir del chat.</p>
+
+  <div class="config-grid">
+    <div class="config-card">
+      <div class="config-card-header">⚙️ Cómo activar las extensiones</div>
+      <div class="config-card-body">
+        En Gemini: <strong>ícono de tu foto de perfil → Configuración → Extensiones</strong>.<br><br>
+        Vas a ver la lista de aplicaciones disponibles. Activá las que vayas a usar — cada una tiene su interruptor. Las extensiones activas aparecen como opciones en el chat.
+      </div>
+    </div>
+    <div class="config-card">
+      <div class="config-card-header">🔒 ¿Es seguro activarlas?</div>
+      <div class="config-card-body">
+        Gemini solo accede a la información que vos le pedís explícitamente en el chat. No escanea tus archivos en segundo plano ni indexa nada por su cuenta.<br><br>
+        Para el taller de hoy: activá <strong>Google Drive</strong> y <strong>NotebookLM</strong>. Son las que más vas a usar.
+      </div>
+    </div>
+  </div>
+
+  <table class="platform-table" style="margin-top:8px;">
+    <thead><tr><th>Extensión</th><th>¿Qué te permite hacer?</th><th>Ejemplo de uso en Ingeniería Industrial</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>📧 Gmail</td>
+        <td>Buscar correos, resumir hilos, redactar borradores con contexto real.</td>
+        <td>"Resumime los últimos correos de proveedores donde hablen de demoras en entregas."</td>
+      </tr>
+      <tr>
+        <td>📁 Google Drive</td>
+        <td>Buscar y leer documentos de tu Drive sin tener que abrirlos ni copiarlos.</td>
+        <td>"Buscá en mi Drive el último informe de no conformidades y decime cuáles están pendientes."</td>
+      </tr>
+      <tr>
+        <td>📅 Google Calendar</td>
+        <td>Ver eventos, planificar reuniones, verificar disponibilidad.</td>
+        <td>"¿Tengo algo agendado esta semana relacionado con auditorías o visitas de calidad?"</td>
+      </tr>
+      <tr>
+        <td>📓 NotebookLM</td>
+        <td>Conectar un Gem de Gemini directamente a uno o varios cuadernos de NotebookLM como base de conocimiento.</td>
+        <td>El asistente del caso puede consultar en tiempo real los documentos que cargaste en NotebookLM sin que tengas que copiar y pegar el contenido.</td>
+      </tr>
+      <tr>
+        <td>▶️ YouTube</td>
+        <td>Resumir videos, extraer información clave de clases o tutoriales técnicos.</td>
+        <td>"Resumime este video de 40 minutos sobre implementación de 5S en planta."</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="alert important">
+    <span class="alert-icon">💜</span>
+    <div><strong>Gemini + NotebookLM conectados:</strong> cuando habilitás la extensión de NotebookLM en Gemini, podés crear un Gem que consulte directamente los documentos de tu cuaderno. El asistente de POE que configurás en la Actividad 2 puede — si lo preferís — leer los tres documentos del caso directamente desde el Notebook en lugar de que tengas que pegarlos en el chat.</div>
+  </div>
+
+  <hr class="divider">
+  <div class="section-title"><span class="title-accent"></span>Paso 4 — Importar tu memoria de ChatGPT a Gemini</div>
+
+  <p style="font-size:0.95rem;color:var(--zeta-mid);margin-bottom:16px;">Gemini tiene una función nativa para traer tu historial y preferencias desde otro asistente de IA. Si ya usabas ChatGPT, este proceso le enseña a Gemini todo lo que ChatGPT aprendió sobre vos — sin tener que configurarlo de cero.</p>
+
+  <div class="alert important">
+    <span class="alert-icon">💜</span>
+    <div><strong>¿Dónde está la función?</strong> En Gemini: <em>foto de perfil (esquina superior derecha) → "Importar memoria a Gemini"</em>. También podés llegar por <em>foto de perfil → "Inteligencia personalizada" → "Importar memoria a Gemini"</em>. Desde ese mismo menú también accedés a <strong>Apps conectadas</strong> (Gmail, Drive, Calendar) e <strong>Instrucciones para Gemini</strong>.</div>
+  </div>
+
+  <div class="steps-list">
+    <div class="step">
+      <div class="step-indicator"><div class="step-num" style="font-size:0.75rem;">1</div></div>
+      <div class="step-body">
+        <div class="step-title">Copiá el prompt que te da Gemini y pegalo en ChatGPT</div>
+        <div class="step-content">
+          <p>Dentro de <strong>"Importar memoria a Gemini"</strong>, Gemini te muestra un prompt listo para usar. Copialo con el botón que aparece en la pantalla y pegalo en una <strong>nueva conversación en ChatGPT</strong>. El prompt que vas a encontrar ahí es este:</p>
+          <div class="prompt-box">
+            <div class="prompt-header">
+              <span class="prompt-label">📋 Prompt de Gemini — copiá y pegá en ChatGPT</span>
+              <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+            </div>
+            <div class="prompt-text">Me estás ayudando a importar contexto de un asistente de IA a otro. Tu trabajo es revisar nuestras conversaciones anteriores y resumir lo que sabes sobre mí.
+En los datos de salida, evita usar pronombres en primera persona (yo, nosotros, mi, mí, mío, nuestro, etc.) y en segunda persona (tú, ustedes, tu, su, tuyo, suyo, etc.). En cambio, refiérete a la persona de la que aprendiste como "el usuario" o usa una frase neutral.
+Conserva las palabras del usuario de forma literal cuando sea posible, en especial para las instrucciones y preferencias.
+Categorías (datos de salida en este orden):
+1. Información demográfica: nombres preferidos, profesión, educación y residencia general
+2. Intereses y preferencias: participaciones activas y sostenidas en el tiempo (no solo la posesión de un objeto o una compra única)
+3. Relaciones: relaciones confirmadas y sostenidas en el tiempo
+4. Eventos, proyectos y planes con fecha: un registro de actividades recientes y significativas
+5. Instrucciones: reglas que te pedí explícitamente que sigas en el futuro, como "siempre haz X", "nunca hagas Y" y correcciones a tu comportamiento (incluye solo reglas de memorias almacenadas, no de conversaciones)
+Formato:
+Usa las categorías anteriores para dividir el contenido en la sección etiquetada. Intenta incluir citas textuales de mis instrucciones que justifiquen cada entrada. Estructura cada entrada con este formato:
+* El usuario se llama &lt;name&gt;.
+    * Prueba: El usuario dijo "llámame &lt;name&gt;". Fecha: [YYYY-MM-DD].
+Datos de salida:
+- Usa un formato de bloque de texto para el resumen final de los datos de salida.</div>
+          </div>
+          <div class="alert tip">
+            <span class="alert-icon">💡</span>
+            <div>Para que ChatGPT pueda revisar tu historial, necesitás tener activa la <strong>memoria de ChatGPT</strong> (<em>ícono de perfil → Personalización → Administrar memoria</em>). Si nunca la activaste, ChatGPT no va a tener nada que resumir.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-indicator"><div class="step-num" style="font-size:0.75rem;">2</div></div>
+      <div class="step-body">
+        <div class="step-title">Copiá la respuesta de ChatGPT</div>
+        <div class="step-content">
+          <p>ChatGPT va a devolverte un resumen estructurado en las 5 categorías del prompt — información demográfica, intereses, relaciones, eventos y proyectos, e instrucciones. <strong>Copiá todo ese bloque de texto.</strong></p>
+          <div class="config-grid">
+            <div class="config-card">
+              <div class="config-card-header">✅ Respuesta útil</div>
+              <div class="config-card-body">ChatGPT devuelve texto estructurado con las 5 categorías, con entradas específicas sobre vos y citas de instrucciones que le diste en el pasado.</div>
+            </div>
+            <div class="config-card">
+              <div class="config-card-header">⚠️ Respuesta vacía o genérica</div>
+              <div class="config-card-body">Si ChatGPT dice que no tiene memoria o que no recuerda nada, es porque la memoria está desactivada o nunca tuvo historial suficiente. En ese caso, saltá este paso.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-indicator"><div class="step-num" style="font-size:0.75rem;">3</div></div>
+      <div class="step-body">
+        <div class="step-title">Pegá el resultado en Gemini y agregá la memoria</div>
+        <div class="step-content">
+          <p>Volvé a Gemini → <strong>"Importar memoria a Gemini"</strong>. En el campo que dice <em>"Pega tu información aquí…"</em>, pegá el bloque de texto que copiaste de ChatGPT. Hacé clic en <strong>"+ Agregar memoria"</strong>.</p>
+          <p>Gemini incorpora esa información a su contexto permanente. A partir de ahora, cuando abras una conversación con Gemini, ya va a saber quién sos, qué preferencias tenés y qué instrucciones habías configurado — sin tener que repetirlo.</p>
+          <div class="alert warning">
+            <span class="alert-icon">⚠️</span>
+            <div><strong>Antes de pegar, revisá el resumen.</strong> ChatGPT puede incluir información trivial o imprecisa. Leé el bloque y borrá lo que no sea relevante para tu trabajo con IA. Quedarte con lo esencial hace que Gemini funcione mejor.</div>
+          </div>
+          <div class="alert tip">
+            <span class="alert-icon">💡</span>
+            <div>También podés subir el ZIP de datos exportado desde ChatGPT directamente en esta misma pantalla (botón <strong>"+ Agregar"</strong> en la sección "Importa chats"). Compatible con archivos de hasta 5 GB. Pero para el taller de hoy, el método del prompt es más rápido.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+  <div class="section-title"><span class="title-accent"></span>Paso 5 — Prueba rápida de las dos plataformas</div>
+
+  <div class="steps-list">
+    <div class="step">
+      <div class="step-indicator"><div class="step-num">6</div></div>
+      <div class="step-body">
+        <div class="step-title">Mismo prompt en ChatGPT y en Gemini — comparar respuestas</div>
+        <div class="step-content">
+          <p>Pegá este prompt en los dos y comparà. Mismo input, dos modelos — observá diferencias en estructura, tono y nivel técnico.</p>
+          <div class="prompt-box">
+            <div class="prompt-header">
+              <span class="prompt-label">Prompt de prueba — pegalo en ChatGPT Y en Gemini</span>
+              <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+            </div>
+            <div class="prompt-text">Explicame en 3 puntos qué es un POE (Procedimiento Operativo Estandarizado) en el contexto de una línea de producción industrial. Lenguaje concreto, no académico.</div>
+          </div>
+          <p style="margin-top:10px;"><strong>Discutí con tu equipo:</strong> ¿Las respuestas son distintas? ¿En qué? ¿Se nota que las instrucciones personalizadas están activas?</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-indicator"><div class="step-num">7</div></div>
+      <div class="step-body">
+        <div class="step-title">NotebookLM — exploración sin documento</div>
+        <div class="step-content">
+          <p>Creá un cuaderno vacío en NotebookLM (<strong>"Prueba INGENIA"</strong>) y preguntale algo sin cargar ninguna fuente.</p>
+          <div class="alert success">
+            <span class="alert-icon">✅</span>
+            <div><strong>Respuesta esperada:</strong> NotebookLM te dice que no tiene fuentes para responder, o responde con conocimiento general marcándolo claramente como externo. Esa limitación es exactamente su característica más útil.</div>
+          </div>
+          <p style="margin-top:10px;">Borrá el cuaderno de prueba. En la Actividad 3 creamos el cuaderno real del caso.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="result-panel">
+    <h4>🏁 Al cerrar esta actividad tenés que tener</h4>
+    <ul class="deliverable-list">
+      <li><span class="del-icon">✅</span> Cuentas activas en ChatGPT, Gemini y NotebookLM.</li>
+      <li><span class="del-icon">⚙️</span> Perfil de personalidad configurado en ChatGPT y/o Gemini.</li>
+      <li><span class="del-icon">🔗</span> Extensiones de Gemini activadas — al menos Google Drive y NotebookLM.</li>
+      <li><span class="del-icon">🔄</span> Si venías usando ChatGPT: contexto portado a Gemini con alguno de los tres métodos.</li>
+      <li><span class="del-icon">🗺️</span> Claro para qué sirve cada plataforma y cuándo usar cada una.</li>
+      <li><span class="del-icon">💬</span> Las tres plataformas usadas al menos una vez — sabés dónde está qué en cada interfaz.</li>
+    </ul>
+  </div>
+
+</section>
+
+
+<!-- ════════════════════════ ACTIVIDAD 2 ════════════════════════ -->
+<section id="activity-2" class="activity-section">
+
+  <div class="activity-header">
+    <div class="activity-badge">Actividad 2 · Bloque 1 — 45 min</div>
+    <h1 class="activity-title">Construís tu<br>Asistente de POE</h1>
+    <p class="activity-desc">Configurás un asistente de IA especializado en redacción de procedimientos operativos usando las 5 capas del prompt. Al terminar, tenés una herramienta lista y calibrada para el caso del Bloque 2.</p>
+    <div class="activity-meta">
+      <div class="meta-item">⏱ 45 minutos</div>
+      <div class="meta-item">👥 Individual + discusión en equipo</div>
+      <div class="meta-item">💻 ChatGPT o Gemini con cuenta gratuita</div>
+    </div>
+  </div>
+
+  <div class="objectives-card">
+    <h3>¿Qué vas a lograr con esta actividad?</h3>
+    <ul class="objectives-list">
+      <li>Entender las 5 capas de un prompt bien construido y qué hace cada una.</li>
+      <li>Configurar el Asistente de POE con el prompt semilla especializado.</li>
+      <li>Verificar que el asistente respeta sus restricciones con la primera prueba de funcionamiento.</li>
+    </ul>
+  </div>
+
+  <div class="tools-row">
+    <div class="tool-chip"><span class="tool-dot"></span>ChatGPT — Proyectos</div>
+    <div class="tool-chip"><span class="tool-dot" style="background:#1a73e8;"></span>Google Gemini — Gems</div>
+  </div>
+
+  <div class="section-title"><span class="title-accent"></span>Proyecto (ChatGPT) o Gem (Gemini) — elegí tu plataforma</div>
+
+  <div class="config-grid">
+    <div class="config-card">
+      <div class="config-card-header">🤖 ChatGPT — Proyectos</div>
+      <div class="config-card-body">
+        <strong>Cómo crearlo:</strong> panel izquierdo → <em>Proyectos</em> → <em>+ Nuevo proyecto</em>.<br><br>
+        Las instrucciones van en la <strong>configuración del proyecto</strong>, no en el chat. El asistente las recuerda en todas las conversaciones dentro del proyecto.
+      </div>
+    </div>
+    <div class="config-card">
+      <div class="config-card-header">💎 Gemini — Gems</div>
+      <div class="config-card-body">
+        <strong>Cómo crearlo:</strong> panel izquierdo → <em>Mis Gems</em> → <em>Nuevo Gem</em>.<br><br>
+        <strong>Ventaja diferencial:</strong> podés conectar el Gem directamente a un cuaderno de NotebookLM como base de conocimiento viva y actualizable.
+      </div>
+    </div>
+  </div>
+
+  <div class="alert tip">
+    <span class="alert-icon">💡</span>
+    <div>Si no tenés preferencia, usá <strong>ChatGPT Proyectos</strong>. El prompt semilla fue diseñado y verificado en ChatGPT.</div>
+  </div>
+
+  <hr class="divider">
+  <div class="section-title"><span class="title-accent"></span>Las 5 capas del prompt — entendé qué hace cada parte antes de copiar</div>
+
+  <table class="capas-table">
+    <thead><tr><th>Capa</th><th>¿Qué hace?</th><th>En el Prompt Semilla de hoy</th></tr></thead>
+    <tbody>
+      <tr><td><span class="capa-tag" style="background:#f0c070;color:#3a2a00;">ROL</span></td><td>Le dice a la IA quién tiene que ser. Más específico = mejor output.</td><td>Especialista en POEs para la industria alimenticia argentina.</td></tr>
+      <tr><td><span class="capa-tag" style="background:#70c8f0;color:#00304a;">TAREA</span></td><td>Una sola acción, en imperativo, sin ambigüedad.</td><td>Transformar información desordenada en procedimientos listos para planta.</td></tr>
+      <tr><td><span class="capa-tag" style="background:#80d8a0;color:#003a10;">RESTRICCIONES</span></td><td>Lo que la IA NO puede hacer sola bajo ninguna circunstancia.</td><td>No decide ante contradicciones. Lista valores conflictivos. Siempre da alternativa ante dependencias de persona.</td></tr>
+      <tr><td><span class="capa-tag" style="background:#ff9a7a;color:#4a1500;">FORMATO</span></td><td>La estructura exacta del output esperado.</td><td>Objetivo / Alcance / Materiales / Pasos / Puntos de control / Alertas.</td></tr>
+      <tr><td><span class="capa-tag" style="background:#d090f8;color:#2a004a;">CONTEXTO</span></td><td>Dónde está parado el modelo y qué tipo de información va a recibir.</td><td>Industria alimenticia argentina. Entrevistas + notas de guardia + registros de NCs.</td></tr>
+    </tbody>
+  </table>
+
+  <hr class="divider">
+  <div class="section-title"><span class="title-accent"></span>El Prompt Semilla — copiá y pegá en las instrucciones de tu asistente</div>
+
+  <div class="alert important" style="margin-bottom:14px;">
+    <span class="alert-icon">🤖</span>
+    <div><strong>¿Querés ajustarlo o construir uno distinto?</strong> Usá el <a href="https://gemini.google.com/gem/1B9BINFanHXnDNR3BzsTzcDOhEfbmg8zB?usp=sharing" target="_blank" style="color:var(--zeta-primary);font-weight:700;">SZ-Asistente de Prompts 2.0 →</a> — creado por Somos Zeta para ayudarte a construir o mejorar instrucciones aplicando las 5 capas. Describile el rol que necesitás y te devuelve el bloque listo para pegar en el Proyecto o Gem.</div>
+  </div>
+
+  <div class="prompt-box">
+    <div class="prompt-header">
+      <span class="prompt-label">🟣 Prompt Semilla — Asistente de POE Industrial</span>
+      <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+    </div>
+    <div class="pr-legend">
+      <div class="pr-legend-item"><div class="pr-legend-dot" style="background:#f0c070;"></div><span class="pr-rol">ROL</span></div>
+      <div class="pr-legend-item"><div class="pr-legend-dot" style="background:#70c8f0;"></div><span class="pr-tema">TAREA</span></div>
+      <div class="pr-legend-item"><div class="pr-legend-dot" style="background:#80d8a0;"></div><span class="pr-preguntas">RESTRICCIONES</span></div>
+      <div class="pr-legend-item"><div class="pr-legend-dot" style="background:#ff9a7a;"></div><span class="pr-formato">FORMATO</span></div>
+      <div class="pr-legend-item"><div class="pr-legend-dot" style="background:#d090f8;"></div><span class="pr-contexto">CONTEXTO</span></div>
+    </div>
+    <div class="prompt-text"><span class="pr-rol">Sos un asistente especializado en redacción de Procedimientos Operativos Estandarizados (POE) para la industria alimenticia argentina.</span> <span class="pr-tema">Tu función es ayudar a ingenieros industriales a transformar información operativa desordenada — entrevistas, notas de campo y registros de no conformidades — en procedimientos claros, precisos y listos para ser implementados en planta.</span>
+
+<span class="pr-formato">Cuando redactes un POE, siempre seguís esta estructura fija: objetivo del procedimiento, alcance (quién lo ejecuta y en qué condiciones), materiales y herramientas necesarias, pasos numerados en orden de ejecución, puntos de control críticos con valores de referencia, y registro requerido al finalizar.</span>
+
+<span class="pr-contexto">Usás lenguaje operativo directo. Nada de tecnicismos innecesarios. Cada paso tiene que ser ejecutable por un operario que entra a trabajar por primera vez en ese turno, sin necesidad de preguntar nada a nadie.</span>
+
+<span class="pr-preguntas">Restricciones que siempre respetás:
+— Si encontrás información contradictoria en los documentos que te doy, la señalás explícitamente antes de redactar y me preguntás cómo proceder. No tomás decisiones por tu cuenta en esos casos.
+— Si un paso del proceso depende de una persona específica (por nombre o rol único), siempre incluís una instrucción alternativa para cuando esa persona no esté disponible.
+— Si un valor técnico (temperatura, peso, tiempo) aparece con más de una versión en los documentos, los listás todos y me pedís que confirme cuál es el correcto antes de incluirlo en el procedimiento.</span>
+
+<span class="pr-formato">Cuando termines de redactar un POE, agregás al final una sección llamada "Alertas para revisión" donde listás todo lo que encontraste ambiguo, contradictorio o sin suficiente respaldo documental.</span>
+
+¿Entendiste tu rol? Confirmá con una descripción breve de lo que vas a hacer y esperá a que te pase el primer documento.</div>
+  </div>
+
+  <div class="alert warning">
+    <span class="alert-icon">⚠️</span>
+    <div><strong>Recordá:</strong> el prompt semilla va en las instrucciones del <strong>Proyecto/Gem</strong>, no en el chat. Si lo pegás en el chat, el asistente no lo recordará en la próxima conversación.</div>
+  </div>
+
+  <hr class="divider">
+  <div class="section-title"><span class="title-accent"></span>Iteración 1 — Lenguaje operativo</div>
+
+  <div class="steps-list">
+    <div class="step">
+      <div class="step-indicator"><div class="step-num">1</div></div>
+      <div class="step-body">
+        <div class="step-title">Verificá que el asistente entendió su rol</div>
+        <div class="step-content">
+          <p>Abrí una nueva conversación dentro del Proyecto/Gem. Debería confirmarte su función y esperar documentos.</p>
+          <div class="alert success">
+            <span class="alert-icon">✅</span>
+            <div><strong>Respuesta esperada:</strong> "Soy tu asistente especializado en POEs para la industria alimenticia. Señalaré contradicciones antes de redactar y esperaré tu confirmación ante valores conflictivos. Listo para empezar."</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-indicator"><div class="step-num">2</div></div>
+      <div class="step-body">
+        <div class="step-title">Dos versiones del mismo paso — técnica y operativa</div>
+        <div class="step-content">
+          <div class="prompt-box">
+            <div class="prompt-header">
+              <span class="prompt-label">Prompt — Iteración 1 · Lenguaje</span>
+              <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+            </div>
+            <div class="prompt-text">Redactá el paso de limpieza del circuito de mezcla usando el siguiente método: enjuague con agua caliente a 75°C por 5 minutos, seguido de limpieza con solución de soda cáustica al 2%, enjuague triple y verificación visual antes de cargar la siguiente fruta.
+
+Después reescribí ese mismo paso como si el lector tuviera nivel secundario y fuera su primer día en planta. No asumas ningún conocimiento previo sobre los materiales ni el proceso.</div>
+          </div>
+          <p style="margin-top:10px;"><strong>Pregunta para el equipo:</strong> ¿Cuál versión usarías en una planta real? ¿Qué se gana y qué se pierde en cada caso?</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="result-panel">
+    <h4>🏁 Al cerrar esta actividad tenés que tener</h4>
+    <ul class="deliverable-list">
+      <li><span class="del-icon">🤖</span> Asistente configurado con el prompt semilla en las instrucciones del Proyecto/Gem.</li>
+      <li><span class="del-icon">✅</span> Confirmación de rol: el asistente respondió correctamente a la primera apertura.</li>
+      <li><span class="del-icon">📝</span> Dos versiones del paso de limpieza generadas y discutidas en equipo.</li>
+    </ul>
+  </div>
+
+</section>
+
+
+<!-- ════════════════════════ ACTIVIDAD 3 ════════════════════════ -->
+<section id="activity-3" class="activity-section">
+
+  <div class="activity-header">
+    <div class="activity-badge">Actividad 3 · Bloque 1 — 30 min</div>
+    <h1 class="activity-title">NotebookLM —<br>El mapa del caos</h1>
+    <p class="activity-desc">Cargás los tres documentos del <strong>caso de práctica</strong> en NotebookLM y usás la herramienta para mapear contradicciones, dependencias y lagunas. En el Bloque 2 vas a repetir este mismo proceso con documentos distintos — acá aprendés cómo se hace.</p>
+    <div class="activity-meta">
+      <div class="meta-item">⏱ 30 minutos</div>
+      <div class="meta-item">👥 Un Notebook por equipo</div>
+      <div class="meta-item">🔗 notebooklm.google.com</div>
+    </div>
+  </div>
+
+  <div class="objectives-card">
+    <h3>¿Qué vas a lograr con esta actividad?</h3>
+    <ul class="objectives-list">
+      <li>Crear un Notebook con los tres documentos del caso cargados como fuentes.</li>
+      <li>Usar preguntas guiadas para identificar contradicciones y lagunas.</li>
+      <li>Generar una síntesis del caso (Audio Overview) que nivele a todo el equipo.</li>
+    </ul>
+  </div>
+
+  <div class="tools-row">
+    <div class="tool-chip"><span class="tool-dot" style="background:#1a73e8;"></span>NotebookLM — notebooklm.google.com</div>
+  </div>
+
+  <div class="steps-list">
+    <div class="step">
+      <div class="step-indicator"><div class="step-num">1</div></div>
+      <div class="step-body">
+        <div class="step-title">Creá el Notebook del caso</div>
+        <div class="step-content">
+          <p><strong>"Nuevo cuaderno"</strong> → nombralo <strong>Alimentos del Centro — Setup Cocción L1</strong>.</p>
+          <div class="alert tip"><span class="alert-icon">💡</span><div>Un solo Notebook por equipo es suficiente. Uno lo crea y comparte la pantalla; el resto guía las preguntas.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-indicator"><div class="step-num">2</div></div>
+      <div class="step-body">
+        <div class="step-title">Cargá los tres documentos de prueba</div>
+        <div class="step-content">
+          <p>En NotebookLM, hacé clic en <strong>"Agregar fuentes"</strong> → elegí <strong>"Texto copiado"</strong> y pegá uno por uno los siguientes tres textos. Estos documentos simulan la información relevada en la planta y <strong>contienen errores a propósito</strong> para que la IA los detecte.</p>
+
+          <!-- DOC 1 -->
+          <div class="prompt-box">
+            <div class="prompt-header">
+              <span class="prompt-label">📄 Doc. 1: Transcripción entrevistas a operarios</span>
+              <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+            </div>
+            <div class="prompt-text">ENTREVISTAS - ALIMENTOS DEL CENTRO S.A.
+Línea de Cocción 1 - Tema: Setup y Arranque
+
+ENTREVISTADOR: ¿Cómo es el proceso de setup de la línea de cocción 1?
+
+RIVAS H. (operario senior, 10 años en planta): "El setup principal es el pasteurizador. La temperatura del pasteurizador la seteo en 175°C, que es lo que marca el manual técnico. Lo hago después de los 15 minutos de precalentamiento, cuando el equipo ya está estable. Después limpiamos el circuito: enjuague con agua caliente a 75°C por 5 minutos, seguido de limpieza con solución de soda cáustica al 2%, enjuague triple y verificación visual antes de cargar la siguiente fruta. Ah, y si se desajusta el distribuidor de vapor durante el arranque, lo llamamos directo a Herrera, que es el único que le tiene la mano a esa válvula y está autorizado."
+
+SOSA M. (operario, 2 años en planta): "Para mí el setup arranca distinto. Yo pongo 170°C porque con las frutas de temporada baja el 175°C te quema el producto y arrancás con merma directamente. Y a la temperatura la calibro antes de encender el equipo, así el sensor ya está zeroeado cuando empieza a subir el calor. La limpieza sí la hacemos igual que dice Rivas, enjuague y soda al 2%."</div>
+          </div>
+
+          <!-- DOC 2 -->
+          <div class="prompt-box">
+            <div class="prompt-header">
+              <span class="prompt-label">📄 Doc. 2: Nota del jefe de turno</span>
+              <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+            </div>
+            <div class="prompt-text">CUADERNO DE GUARDIA DIGITALIZADO
+FECHA: 15/04
+TURNO: Mañana
+AUTOR: Jefe de Turno (M. Vargas)
+
+NOVEDADES: Arranque de línea con demoras. Ayer tuve que arrancar el pasteurizador con 172°C porque el sensor deriva en los arranques fríos de invierno y tarda en acomodarse. No está documentado esto en ningún manual, por favor avisen a mantenimiento que lo revise cuando tengan tiempo.
+
+Por otro lado, dejar asentado que la semana pasada Herrera faltó por enfermedad y en el arranque el distribuidor de vapor quedó trabado. Tuvimos la línea parada toda la mañana. Necesitamos urgente capacitar a un reemplazo o documentar bien cómo se destraba esa válvula, porque no podemos depender de una sola persona.</div>
+          </div>
+
+          <!-- DOC 3 -->
+          <div class="prompt-box">
+            <div class="prompt-header">
+              <span class="prompt-label">📄 Doc. 3: Registro de no conformidades</span>
+              <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+            </div>
+            <div class="prompt-text">REGISTRO DE NO CONFORMIDADES (NC) - MARZO/ABRIL
+Área: Línea de Cocción 1
+
+- NC-001 (02/03): Producto final rechazado por sabor a quemado. Causa probable: exceso de temperatura en el precalentamiento (175°C) procesando lote de fruta de baja temporada. Estado: Cerrada.
+
+- NC-002 (10/04): Parada de línea de 4 horas. Causa: Desajuste crítico en el distribuidor de vapor durante el arranque. El técnico especialista (Herrera) se encontraba ausente y el personal de turno no tiene autorización ni conocimiento para intervenir la válvula principal. Estado: Abierta, requiere POE actualizado urgente.
+
+- NC-003 (14/04): Deriva térmica en pasteurizador. El sensor marca 3 grados menos en arranques en frío. Estado: Pendiente de calibración por Mantenimiento.</div>
+          </div>
+
+          <div class="alert tip"><span class="alert-icon">💡</span><div><strong>Estos documentos son un caso de práctica.</strong> En el Bloque 2 vas a recibir documentos de un caso distinto. Acá el objetivo es aprender el método: cómo usar NotebookLM para mapear contradicciones antes de escribir un solo paso del POE.</div></div>
+          <div class="alert warning"><span class="alert-icon">⚠️</span><div>Esperá la confirmación de procesamiento de cada fuente antes de hacer preguntas a NotebookLM.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-indicator"><div class="step-num">3</div></div>
+      <div class="step-body">
+        <div class="step-title">Las cuatro preguntas guiadas — mapeá el caos</div>
+        <div class="step-content">
+          <div class="prompt-box">
+            <div class="prompt-header"><span class="prompt-label">Pregunta 1 — Contradicciones</span><button class="copy-btn" onclick="copyPrompt(this)">Copiar</button></div>
+            <div class="prompt-text">¿Qué información contradictoria encontrás entre los tres documentos? Listá cada contradicción con las fuentes específicas que se contradicen y el impacto que tiene en el procedimiento operativo.</div>
+          </div>
+          <div class="prompt-box">
+            <div class="prompt-header"><span class="prompt-label">Pregunta 2 — Dependencias de persona</span><button class="copy-btn" onclick="copyPrompt(this)">Copiar</button></div>
+            <div class="prompt-text">¿Qué pasos del proceso dependen de una sola persona para ejecutarse correctamente? ¿Qué consecuencias documentadas tuvo la ausencia de esa persona según los registros?</div>
+          </div>
+          <div class="prompt-box">
+            <div class="prompt-header"><span class="prompt-label">Pregunta 3 — Lagunas de información</span><button class="copy-btn" onclick="copyPrompt(this)">Copiar</button></div>
+            <div class="prompt-text">¿Qué información crítica para redactar un POE NO aparece en ninguno de los tres documentos? ¿Qué decisiones técnicas quedan sin respaldo documental?</div>
+          </div>
+          <div class="prompt-box">
+            <div class="prompt-header"><span class="prompt-label">Pregunta 4 — Problemas sin resolver</span><button class="copy-btn" onclick="copyPrompt(this)">Copiar</button></div>
+            <div class="prompt-text">¿Cuáles no conformidades están pendientes de cierre? ¿Hay alguna cuya causa raíz no fue identificada? ¿Un POE bien redactado podría haber prevenido alguna de las NCs cerradas?</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-indicator"><div class="step-num">4</div></div>
+      <div class="step-body">
+        <div class="step-title">Generá el Audio Overview — síntesis del caso para todo el equipo</div>
+        <div class="step-content">
+          <p>Panel <strong>Studio</strong> (derecha) → <strong>"Resumen de audio"</strong>. Escuchalo mientras el equipo anota los puntos clave. Son 3–5 minutos que nivelan a todos en el mismo análisis del caso.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="result-panel">
+    <h4>🏁 Al cerrar esta actividad tenés que tener</h4>
+    <ul class="deliverable-list">
+      <li><span class="del-icon">📓</span> Notebook con los tres documentos de práctica procesados.</li>
+      <li><span class="del-icon">📋</span> Contradicciones, dependencias y lagunas mapeadas.</li>
+      <li><span class="del-icon">🎙️</span> Audio Overview escuchado por todo el equipo.</li>
+    </ul>
+  </div>
+
+</section>
+
+
+<!-- ════════════════════════ ACTIVIDAD 4 ════════════════════════ -->
+<section id="activity-4" class="activity-section">
+
+  <div class="activity-header">
+    <div class="activity-badge">Actividad 4 · Bloque 1 — 25 min</div>
+    <h1 class="activity-title">Calibración —<br>Listos para el desafío</h1>
+    <p class="activity-desc">Ponés a prueba el asistente con las contradicciones de un caso de práctica similar al del taller. Iteraciones 2 y 3: el momento donde descubrís si el prompt está bien construido — o exactamente dónde falla.</p>
+    <div class="activity-meta">
+      <div class="meta-item">⏱ 25 minutos</div>
+      <div class="meta-item">👥 Todo el equipo</div>
+      <div class="meta-item">🔗 Asistente + NotebookLM</div>
+    </div>
+  </div>
+
+  <div class="objectives-card">
+    <h3>¿Qué vas a lograr con esta actividad?</h3>
+    <ul class="objectives-list">
+      <li>Verificar que el asistente detecta contradicciones sin decidir solo (Iteración 2).</li>
+      <li>Identificar si el asistente alucina ante información faltante o reconoce su límite (Iteración 3).</li>
+      <li>Corregir el prompt si hay fallas — ese momento de corrección es el aprendizaje central del Bloque 1.</li>
+    </ul>
+  </div>
+
+  <div class="section-title"><span class="title-accent"></span>Iteración 2 — Contradicciones del caso de práctica</div>
+  <div class="alert tip" style="margin-bottom:14px;">
+    <span class="alert-icon">💡</span>
+    <div><strong>Este es un caso de práctica distinto al del Bloque 2.</strong> La empresa, el proceso y los valores son diferentes a los que van a recibir en el taller. Lo que aprendés acá es el <em>método</em> — cómo detectar y manejar contradicciones con el asistente. En el Bloque 2 vas a aplicar ese mismo método sobre documentos que nunca viste.</div>
+  </div>
+
+  <div class="steps-list">
+    <div class="step">
+      <div class="step-indicator"><div class="step-num">1</div></div>
+      <div class="step-body">
+        <div class="step-title">Pasale los fragmentos contradictorios</div>
+        <div class="step-content">
+          <div class="prompt-box">
+            <div class="prompt-header"><span class="prompt-label">Prompt — Iteración 2 · Tres versiones del mismo valor</span><button class="copy-btn" onclick="copyPrompt(this)">Copiar</button></div>
+            <div class="prompt-text">Te paso tres fragmentos de un caso de práctica. Leelos y decime cómo vas a proceder antes de redactar:
+
+RIVAS H. (operario senior, 10 años en planta): "La temperatura del pasteurizador la seteo en 175°C, que es lo que marca el manual técnico. Lo hago después de los 15 minutos de precalentamiento, cuando el equipo ya está estable."
+
+SOSA M. (operario, 2 años en planta): "Yo pongo 170°C porque con las frutas de temporada baja el 175 te quema el producto y arrancás con merma. Y lo calibro antes de encender el equipo, así el sensor ya está zeroeado cuando sube la temperatura."
+
+NOTA DEL JEFE DE TURNO: "Ayer tuve que arrancar con 172 porque el sensor deriva en los arranques fríos de invierno. No está documentado esto en ningún lado."
+
+¿Cuál es el valor correcto para la temperatura? ¿En qué momento se realiza la calibración? Procedé a redactar ese paso del POE.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-indicator"><div class="step-num">2</div></div>
+      <div class="step-body">
+        <div class="step-title">Evaluá la respuesta</div>
+        <div class="step-content">
+          <div class="config-grid">
+            <div class="config-card">
+              <div class="config-card-header">✅ Prompt bien construido</div>
+              <div class="config-card-body">Señala las tres contradicciones y <strong>pregunta cómo proceder antes de redactar</strong>. No elige solo, no promedia.</div>
+            </div>
+            <div class="config-card">
+              <div class="config-card-header">❌ Hay una falla</div>
+              <div class="config-card-body">Elige un valor solo o ignora alguna contradicción. <strong>Acción:</strong> revisá la sección RESTRICCIONES del prompt, corregila y probá de nuevo.</div>
+            </div>
+          </div>
+          <div class="alert important" style="margin-top:14px;">
+            <span class="alert-icon">🤖</span>
+            <div><strong>¿No sabés exactamente qué restricción agregar?</strong> Llevá el prompt con la falla al <a href="https://gemini.google.com/gem/1B9BINFanHXnDNR3BzsTzcDOhEfbmg8zB?usp=sharing" target="_blank" style="color:var(--zeta-primary);font-weight:700;">SZ-Asistente de Prompts 2.0 →</a>, explicale qué hizo mal el asistente y pedile que identifique la restricción faltante. Es el camino más rápido para corregir en el tiempo del taller.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+  <div class="section-title"><span class="title-accent"></span>Iteración 3 — La prueba de la dependencia oculta</div>
+
+  <div class="steps-list">
+    <div class="step">
+      <div class="step-indicator"><div class="step-num">3</div></div>
+      <div class="step-body">
+        <div class="step-title">Información que no existe en ningún documento</div>
+        <div class="step-content">
+          <div class="prompt-box">
+            <div class="prompt-header"><span class="prompt-label">Prompt — Iteración 3 · Dependencia oculta</span><button class="copy-btn" onclick="copyPrompt(this)">Copiar</button></div>
+            <div class="prompt-text">En el paso de ajuste del distribuidor de vapor, el técnico Herrera es el responsable habitual. Los documentos muestran que a veces no está disponible y eso ya causó una parada de línea de 4 horas (NC-002).
+
+Necesito que incorpores al POE el procedimiento alternativo para cuando Herrera no esté: quién puede hacer el ajuste, qué pasos seguir, qué herramientas se necesitan y cuál es el límite de lo que puede hacerse sin el técnico.</div>
+          </div>
+          <div class="config-grid" style="margin-top:14px;">
+            <div class="config-card">
+              <div class="config-card-header">✅ Calibrado — pide aclaración</div>
+              <div class="config-card-body">"No tengo esa información en los documentos. Para incluir esa sección, necesito que me indiques quién tiene autorización y cómo se ejecuta el ajuste."</div>
+            </div>
+            <div class="config-card">
+              <div class="config-card-header">🚨 Alucinación — inventa el procedimiento</div>
+              <div class="config-card-body">Redacta pasos específicos sin que vos le hayas dado esa información. No teórico — un error concreto en un procedimiento que podría imprimirse y ponerse en planta.</div>
+            </div>
+          </div>
+          <div class="alert important">
+            <span class="alert-icon">💜</span>
+            <div><strong>El momento más importante del Bloque 1:</strong> ver a la IA fallar de manera específica y entender por qué. ¿Qué restricción le faltaba al prompt? Identificala, agregala, verificá que la corrección funciona.</div>
+          </div>
+          <div class="alert important">
+            <span class="alert-icon">🤖</span>
+            <div><strong>Si alucinó y no sabés cómo corregirlo:</strong> copiá el prompt actual y llevalo al <a href="https://gemini.google.com/gem/1B9BINFanHXnDNR3BzsTzcDOhEfbmg8zB?usp=sharing" target="_blank" style="color:var(--zeta-primary);font-weight:700;">SZ-Asistente de Prompts 2.0 →</a>. Describile qué hizo mal el asistente (inventó información sin avisar) y pedile que diagnostique la falla y proponga la restricción exacta que falta agregar.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+  <div class="section-title"><span class="title-accent"></span>Checklist de largada — ¿listos para el Bloque 2?</div>
+
+  <ul class="checklist">
+    <li><input type="checkbox" id="c1"><label for="c1"><strong>Plataformas y perfiles:</strong> cuentas activas en las tres, perfil de personalidad configurado en ChatGPT y/o Gemini.</label></li>
+    <li><input type="checkbox" id="c2"><label for="c2"><strong>Asistente configurado:</strong> prompt semilla en las instrucciones del Proyecto/Gem (no en el chat), respuesta de rol correcta.</label></li>
+    <li><input type="checkbox" id="c3"><label for="c3"><strong>Iteración 1 completada:</strong> dos versiones del paso de limpieza generadas y discutidas en equipo.</label></li>
+    <li><input type="checkbox" id="c4"><label for="c4"><strong>Iteración 2 completada:</strong> el asistente señaló contradicciones sin decidir solo. Si falló, el prompt fue corregido.</label></li>
+    <li><input type="checkbox" id="c5"><label for="c5"><strong>Iteración 3 completada:</strong> identificamos si hubo alucinación y, si la hubo, corregimos la restricción faltante.</label></li>
+    <li><input type="checkbox" id="c6"><label for="c6"><strong>NotebookLM activo:</strong> Notebook con los tres documentos del caso de práctica cargados y al menos tres contradicciones mapeadas.</label></li>
+    <li><input type="checkbox" id="c7"><label for="c7"><strong>Criterio de equipo:</strong> saben cuáles decisiones técnicas la IA no puede tomar sola y cómo combinar las herramientas en el Bloque 2.</label></li>
+  </ul>
+
+  <div class="result-panel">
+    <h4>🚀 Con esto en orden, están listos para el Desafío de Industria</h4>
+    <ul class="deliverable-list">
+      <li><span class="del-icon">🤖</span> Asistente de POE calibrado, restricciones verificadas en las tres iteraciones.</li>
+      <li><span class="del-icon">📓</span> NotebookLM activo con el caso completo cargado y analizado.</li>
+      <li><span class="del-icon">🗺️</span> Mapa de contradicciones, dependencias y lagunas listo para el Bloque 2.</li>
+      <li><span class="del-icon">🔑</span> Criterio claro: cuándo confiar en la IA y cuándo el ingeniero toma la decisión.</li>
+    </ul>
+  </div>
+
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <strong>Somos Zeta Digital Advice</strong> · Taller INGENIA — UTN FRSF · Ing. Leo Zequin<br>
+  <a href="https://www.somos-zeta.com">somos-zeta.com</a> · @somoszeta_da · +54 9 342 5377879
+</footer>
+
+<script>
+  function showActivity(num) {
+    document.querySelectorAll('.activity-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('activity-' + num).classList.add('active');
+    document.querySelectorAll('.nav-tab')[num - 1].classList.add('active');
+    window.scrollTo({ top: 130, behavior: 'smooth' });
+    return false;
+  }
+  function copyPrompt(btn) {
+    const text = btn.closest('.prompt-box').querySelector('.prompt-text').innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = '¡Copiado!';
+      btn.style.cssText += 'background:rgba(80,200,120,0.25);color:#80ffaa;border-color:rgba(80,200,120,0.5);';
+      setTimeout(() => { btn.textContent = orig; btn.style.cssText = ''; }, 2000);
+    });
+  }
+</script>
+</body>
+</html>
